@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/stretchr/testify/assert"
 
+	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -17,9 +18,19 @@ func TestLoadConfig(t *testing.T) {
 
 	tempFile.Write(JSONConfig)
 
-	config := Load(tempFile.Name())
+	config, err := Load(tempFile.Name())
 
+	assert.Nil(t, err)
 	assert.Equal(t, config.Server.Address, "127.0.0.1")
 	assert.Equal(t, config.Server.Port, 32400)
 	assert.Equal(t, config.Server.Token, "webtoken")
+}
+
+func TestLoadConfigFailsConfigFileDoesNotExists(t *testing.T) {
+
+	file := "/tmp/config.json"
+	_, err := Load(file)
+
+	assert.NotNil(t, err)
+	assert.Equal(t, err, fmt.Errorf("Config file %s does not exist", file))
 }
