@@ -1,4 +1,4 @@
-package config
+package plex
 
 import (
 	"github.com/stretchr/testify/assert"

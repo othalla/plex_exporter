@@ -1,4 +1,4 @@
-package config
+package plex
 
 import (
 	"encoding/json"
@@ -8,10 +8,10 @@ import (
 )
 
 type Config struct {
-	Server Server `json:"server"`
+	Server server `json:"server"`
 }
 
-type Server struct {
+type server struct {
 	Address string `json:"address"`
 	Port    int    `json:"port"`
 	Token   string `json:"token"`
