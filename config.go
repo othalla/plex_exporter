@@ -27,9 +27,8 @@ func Load(file string) (*Config, error) {
 
 	data, _ := ioutil.ReadFile(file)
 
-	var lol = []byte(data)
 	var config Config
-	if err := json.Unmarshal(lol, &config); err != nil {
+	if err := json.Unmarshal([]byte(data), &config); err != nil {
 		return nil, fmt.Errorf("Config file %s is not a valid json", file)
 	}
 	return &config, nil
