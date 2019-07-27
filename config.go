@@ -29,6 +29,8 @@ func Load(file string) (*Config, error) {
 
 	var lol = []byte(data)
 	var config Config
-	json.Unmarshal(lol, &config)
+	if err := json.Unmarshal(lol, &config); err != nil {
+		return nil, fmt.Errorf("Config file %s is not a valid json", file)
+	}
 	return &config, nil
 }
