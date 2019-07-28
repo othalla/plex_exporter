@@ -32,7 +32,10 @@ func (ps *PlexServer) CurrentSessionsCount(HTTPClient HTTPClient) (int, error) {
 
 	request, _ := http.NewRequest("GET", url, nil)
 	request.Header.Add("X-Plex-Token", ps.Token)
-	response, _ := HTTPClient.Do(request)
+	response, err := HTTPClient.Do(request)
+	if err != nil {
+		return 0, err
+	}
 	if response.StatusCode != 200 {
 		return 0, fmt.Errorf("Got bad status code %d from server", response.StatusCode)
 	}

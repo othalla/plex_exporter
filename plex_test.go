@@ -2,6 +2,7 @@ package plex
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -62,4 +63,11 @@ func TestPlexServerCurrentSessionsCountBadStatusCode(t *testing.T) {
 }
 
 func TestPlexServerCurrentSessionsCountHTTPRequestError(t *testing.T) {
+	client := MockHTTPClient{
+		response: nil,
+		err:      errors.New("http error"),
+	}
+	plexServer := PlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token"}
+	_, err := plexServer.CurrentSessionsCount(&client)
+	assert.NotNil(t, err)
 }
