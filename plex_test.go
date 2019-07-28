@@ -2,6 +2,7 @@ package plex
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -48,4 +49,21 @@ func TestPlexServerCurrentSessionsCountBadJsonResponse(t *testing.T) {
 	plexServer := PlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
 	_, err := plexServer.CurrentSessionsCount()
 	assert.NotNil(t, err)
+}
+
+func TestPlexServerCurrentSessionsCountBadStatusCode(t *testing.T) {
+
+	client := NewTestClient(func(req *http.Request) *http.Response {
+		return &http.Response{
+			StatusCode: 500,
+		}
+	})
+
+	plexServer := PlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
+	_, err := plexServer.CurrentSessionsCount()
+	assert.NotNil(t, err)
+	assert.Equal(t, err, fmt.Errorf("Got bad status code 500 from server"))
+}
+
+func TestPlexServerCurrentSessionsCountHTTPRequestError(t *testing.T) {
 }
