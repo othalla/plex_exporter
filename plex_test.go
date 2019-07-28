@@ -10,57 +10,53 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type RoundTripFunction func(req *http.Request) *http.Response
-
-func (f RoundTripFunction) RoundTrip(req *http.Request) (*http.Response, error) {
-	return f(req), nil
+type MockHTTPClient struct {
+	response *http.Response
+	err      error
 }
 
-func NewTestClient(function RoundTripFunction) *http.Client {
-	return &http.Client{
-		Transport: function,
-	}
+func (c *MockHTTPClient) Do(req *http.Request) (*http.Response, error) {
+	return c.response, c.err
 }
 
 func TestPlexServerCurrentSessionsCount(t *testing.T) {
 
-	client := NewTestClient(func(req *http.Request) *http.Response {
-		assert.Equal(t, req.URL.String(), "https://127.0.0.1:32400/status/sessions")
-		return &http.Response{
+	client := MockHTTPClient{
+		response: &http.Response{
 			StatusCode: 200,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 3}}`)),
-		}
-	})
+		},
+		err: nil,
+	}
 
-	plexServer := PlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
-	sessionCounter, _ := plexServer.CurrentSessionsCount()
+	plexServer := PlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token"}
+	sessionCounter, _ := plexServer.CurrentSessionsCount(&client)
 	assert.Equal(t, sessionCounter, 3)
 }
 
 func TestPlexServerCurrentSessionsCountBadJsonResponse(t *testing.T) {
-
-	client := NewTestClient(func(req *http.Request) *http.Response {
-		return &http.Response{
+	client := MockHTTPClient{
+		response: &http.Response{
 			StatusCode: 200,
-			Body:       ioutil.NopCloser(bytes.NewBufferString(`malformed}`)),
-		}
-	})
+			Body:       ioutil.NopCloser(bytes.NewBufferString(`malformed`)),
+		},
+		err: nil,
+	}
 
-	plexServer := PlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
-	_, err := plexServer.CurrentSessionsCount()
+	plexServer := PlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token"}
+	_, err := plexServer.CurrentSessionsCount(&client)
 	assert.NotNil(t, err)
 }
 
 func TestPlexServerCurrentSessionsCountBadStatusCode(t *testing.T) {
-
-	client := NewTestClient(func(req *http.Request) *http.Response {
-		return &http.Response{
+	client := MockHTTPClient{
+		response: &http.Response{
 			StatusCode: 500,
-		}
-	})
-
-	plexServer := PlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
-	_, err := plexServer.CurrentSessionsCount()
+		},
+		err: nil,
+	}
+	plexServer := PlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token"}
+	_, err := plexServer.CurrentSessionsCount(&client)
 	assert.NotNil(t, err)
 	assert.Equal(t, err, fmt.Errorf("Got bad status code 500 from server"))
 }
