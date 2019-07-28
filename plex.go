@@ -24,7 +24,7 @@ type PlexServer struct {
 	HTTPClient *http.Client
 }
 
-func (ps *PlexServer) CurrentSessionsCount() int {
+func (ps *PlexServer) CurrentSessionsCount() (int, error) {
 	url := fmt.Sprintf(URLSessions, ps.Address, ps.Port)
 
 	request, _ := http.NewRequest("GET", url, nil)
@@ -34,7 +34,9 @@ func (ps *PlexServer) CurrentSessionsCount() int {
 	body, _ := ioutil.ReadAll(response.Body)
 	var sessionContainer SessionMediaContainer
 
-	json.Unmarshal([]byte(body), &sessionContainer)
+	if err := json.Unmarshal([]byte(body), &sessionContainer); err != nil {
+		return 0, err
+	}
 
-	return sessionContainer.SessionsSummary.Size
+	return sessionContainer.SessionsSummary.Size, nil
 }

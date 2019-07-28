@@ -32,6 +32,20 @@ func TestPlexServerCurrentSessionsCount(t *testing.T) {
 	})
 
 	plexServer := PlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
-	sessionCounter := plexServer.CurrentSessionsCount()
+	sessionCounter, _ := plexServer.CurrentSessionsCount()
 	assert.Equal(t, sessionCounter, 3)
+}
+
+func TestPlexServerCurrentSessionsCountBadJsonResponse(t *testing.T) {
+
+	client := NewTestClient(func(req *http.Request) *http.Response {
+		return &http.Response{
+			StatusCode: 200,
+			Body:       ioutil.NopCloser(bytes.NewBufferString(`malformed}`)),
+		}
+	})
+
+	plexServer := PlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
+	_, err := plexServer.CurrentSessionsCount()
+	assert.NotNil(t, err)
 }
