@@ -7,6 +7,7 @@ import (
 	"os"
 )
 
+// Config struct with plex server info
 type Config struct {
 	Server server `json:"server"`
 }
@@ -17,6 +18,7 @@ type server struct {
 	Token   string `json:"token"`
 }
 
+// Load configuration of plex server from json file and return a Config struct
 func Load(file string) (*Config, error) {
 
 	if _, err := os.Stat(file); err != nil {
