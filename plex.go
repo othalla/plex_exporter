@@ -22,17 +22,18 @@ type SessionsSummary struct {
 }
 
 type PlexServer struct {
-	Address string
-	Port    int
-	Token   string
+	Address    string
+	Port       int
+	Token      string
+	HTTPClient HTTPClient
 }
 
-func (ps *PlexServer) CurrentSessionsCount(HTTPClient HTTPClient) (int, error) {
+func (ps *PlexServer) CurrentSessionsCount() (int, error) {
 	url := fmt.Sprintf(URLSessions, ps.Address, ps.Port)
 
 	request, _ := http.NewRequest("GET", url, nil)
 	request.Header.Add("X-Plex-Token", ps.Token)
-	response, err := HTTPClient.Do(request)
+	response, err := ps.HTTPClient.Do(request)
 	if err != nil {
 		return 0, err
 	}
