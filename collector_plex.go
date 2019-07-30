@@ -21,14 +21,14 @@ type SessionsSummary struct {
 	Size int `json:"size"`
 }
 
-type PlexServer struct {
+type CollectorPlexServer struct {
 	Address    string
 	Port       int
 	Token      string
 	HTTPClient HTTPClient
 }
 
-func (ps *PlexServer) CurrentSessionsCount() (int, error) {
+func (ps *CollectorPlexServer) CurrentSessionsCount() (int, error) {
 	url := fmt.Sprintf(URLSessions, ps.Address, ps.Port)
 
 	request, _ := http.NewRequest("GET", url, nil)
