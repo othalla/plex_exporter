@@ -15,12 +15,12 @@ var (
 	)
 )
 
-type plexServer interface {
+type CollectorPlex interface {
 	CurrentSessionsCount() int
 }
 
 type PlexExporter struct {
-	PlexServer plexServer
+	PlexServer CollectorPlex
 }
 
 func (pe *PlexExporter) Describe(ch chan<- *prometheus.Desc) {
