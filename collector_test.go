@@ -3,12 +3,31 @@ package plex
 import (
 	"testing"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSetPlexSessionsMetrics(t *testing.T) {
-	SetPlexSessionsMetrics(10)
+type MockPlexServer struct {
+	Sessions int
+}
 
-	assert.Equal(t, testutil.ToFloat64(plexSessionsGauge), float64(10))
+func (mps *MockPlexServer) CurrentSessionsCount() int {
+	return mps.Sessions
+}
+
+func TestSetPlexSessionsMetrics2(t *testing.T) {
+	ps := &MockPlexServer{Sessions: 17}
+	pe := &PlexExporter{PlexServer: ps}
+
+	ch := make(chan prometheus.Metric)
+	go func() {
+		pe.Collect(ch)
+		close(ch)
+	}()
+
+	for range ch {
+	}
+
+	assert.Equal(t, float64(17), testutil.ToFloat64(plexSessionsGauge))
 }

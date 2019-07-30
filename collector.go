@@ -11,9 +11,24 @@ var (
 			Subsystem: "sessions",
 			Name:      "current_active",
 			Help:      "Total of actives sessions on remote plex media server",
-		})
+		},
+	)
 )
 
-func SetPlexSessionsMetrics(sessions float64) {
-	plexSessionsGauge.Set(sessions)
+type plexServer interface {
+	CurrentSessionsCount() int
+}
+
+type PlexExporter struct {
+	PlexServer plexServer
+}
+
+func (pe *PlexExporter) Describe(ch chan<- *prometheus.Desc) {
+}
+
+func (pe *PlexExporter) Collect(ch chan<- prometheus.Metric) {
+	sessions := pe.PlexServer.CurrentSessionsCount()
+	plexSessionsGauge.Set(float64(sessions))
+	ch <- plexSessionsGauge
+
 }
