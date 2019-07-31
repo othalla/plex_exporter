@@ -7,7 +7,8 @@ import (
 	"net/http"
 )
 
-const URLSessions = "https://%s:%d/status/sessions"
+// TODO CHANGE INSECURE - do we have to query server directly? query it through plex.tv?
+const URLSessions = "http://%s:%d/status/sessions"
 
 type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
