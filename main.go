@@ -1,10 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"net/http"
 	"os"
 
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/urfave/cli"
 )
 
@@ -28,6 +30,26 @@ func main() {
 
 func runExporter(c *cli.Context) error {
 	name := c.String("config")
-	fmt.Printf("param: %s\n", name)
+
+	config, err := Load(name)
+	if err != nil {
+		return err
+	}
+
+	client := &http.Client{}
+
+	plexServerCollector := &CollectorPlexServer{Address: config.Server.Address,
+		Port:       config.Server.Port,
+		Token:      config.Server.Token,
+		HTTPClient: client,
+	}
+
+	plexExporter := &PlexExporter{PlexServer: plexServerCollector}
+
+	prometheus.MustRegister(plexExporter)
+
+	http.Handle("/metrics", promhttp.Handler())
+	http.ListenAndServe(":9090", nil)
+
 	return nil
 }
