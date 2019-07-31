@@ -42,7 +42,10 @@ func (ps *CollectorPlexServer) CurrentSessionsCount() (int, error) {
 		return 0, fmt.Errorf("Got bad status code %d from server", response.StatusCode)
 	}
 
-	body, _ := ioutil.ReadAll(response.Body)
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return 0, err
+	}
 	var sessionContainer SessionMediaContainer
 
 	if err := json.Unmarshal([]byte(body), &sessionContainer); err != nil {

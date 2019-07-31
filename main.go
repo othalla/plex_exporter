@@ -48,6 +48,7 @@ func runExporter(c *cli.Context) error {
 
 	prometheus.MustRegister(plexExporter)
 
+	log.Print("Starting exporter...")
 	http.Handle("/metrics", promhttp.Handler())
 	http.ListenAndServe(":9090", nil)
 

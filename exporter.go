@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -27,7 +29,10 @@ func (pe *PlexExporter) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (pe *PlexExporter) Collect(ch chan<- prometheus.Metric) {
-	sessions, _ := pe.PlexServer.CurrentSessionsCount()
+	sessions, err := pe.PlexServer.CurrentSessionsCount()
+	if err != nil {
+		log.Print(err)
+	}
 
 	plexSessionsGauge.Set(float64(sessions))
 	ch <- plexSessionsGauge
