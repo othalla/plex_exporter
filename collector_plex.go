@@ -33,6 +33,7 @@ func (ps *CollectorPlexServer) CurrentSessionsCount() (int, error) {
 
 	request, _ := http.NewRequest("GET", url, nil)
 	request.Header.Add("X-Plex-Token", ps.Token)
+	request.Header.Add("Accept", "application/json")
 	response, err := ps.HTTPClient.Do(request)
 	if err != nil {
 		return 0, err
