@@ -16,7 +16,7 @@ var (
 )
 
 type CollectorPlex interface {
-	CurrentSessionsCount() int
+	CurrentSessionsCount() (int, error)
 }
 
 type PlexExporter struct {
@@ -27,7 +27,7 @@ func (pe *PlexExporter) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (pe *PlexExporter) Collect(ch chan<- prometheus.Metric) {
-	sessions := pe.PlexServer.CurrentSessionsCount()
+	sessions, _ := pe.PlexServer.CurrentSessionsCount()
 
 	plexSessionsGauge.Set(float64(sessions))
 	ch <- plexSessionsGauge

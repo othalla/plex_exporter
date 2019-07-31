@@ -12,8 +12,8 @@ type MockPlexServer struct {
 	Sessions int
 }
 
-func (mps *MockPlexServer) CurrentSessionsCount() int {
-	return mps.Sessions
+func (mps *MockPlexServer) CurrentSessionsCount() (int, error) {
+	return mps.Sessions, nil
 }
 
 func TestSetPlexSessionsMetrics2(t *testing.T) {
