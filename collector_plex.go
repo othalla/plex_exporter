@@ -1,4 +1,4 @@
-package plex
+package main
 
 import (
 	"encoding/json"
