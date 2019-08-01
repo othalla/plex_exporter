@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/othalla/plex_exporter/config"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/urfave/cli"
@@ -31,7 +32,7 @@ func main() {
 func runExporter(c *cli.Context) error {
 	name := c.String("config")
 
-	config, err := Load(name)
+	config, err := config.Load(name)
 	if err != nil {
 		return err
 	}
