@@ -1,4 +1,4 @@
-package main
+package collector
 
 import (
 	"bytes"
@@ -71,3 +71,18 @@ func TestCollectorPlexServerCurrentSessionsCountHTTPRequestError(t *testing.T) {
 	_, err := plexServer.CurrentSessionsCount()
 	assert.NotNil(t, err)
 }
+
+//func TestCollectorPlexServerGetLibrary(t *testing.T) {
+//jsonBody := `{"MediaContainer": {"size": 1, "Directory": {"key": 1, "title": "First", "type": "show"}}}`
+//client := MockHTTPClient{
+//response: &http.Response{
+//StatusCode: 200,
+//Body:       ioutil.NopCloser(bytes.NewBufferString(jsonBody)),
+//},
+//err: nil,
+//}
+
+//plexServer := CollectorPlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: &client}
+//library := plexServer.GetLibrary()
+//assert.Equal(t, library.Size, 1)
+//}

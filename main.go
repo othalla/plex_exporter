@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/othalla/plex_exporter/collector"
 	"github.com/othalla/plex_exporter/config"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -39,13 +40,13 @@ func runExporter(c *cli.Context) error {
 
 	client := &http.Client{}
 
-	plexServerCollector := &CollectorPlexServer{Address: config.Server.Address,
+	plexServerCollector := &collector.CollectorPlexServer{Address: config.Server.Address,
 		Port:       config.Server.Port,
 		Token:      config.Server.Token,
 		HTTPClient: client,
 	}
 
-	plexExporter := &PlexExporter{PlexServer: plexServerCollector}
+	plexExporter := &collector.PlexExporter{PlexServer: plexServerCollector}
 
 	prometheus.MustRegister(plexExporter)
 

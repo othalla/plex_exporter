@@ -1,4 +1,4 @@
-package main
+package collector
 
 import (
 	"encoding/json"
@@ -21,6 +21,17 @@ type SessionMediaContainer struct {
 type SessionsSummary struct {
 	Size int `json:"size"`
 }
+
+type LibraryMediaContainer struct {
+	LibraryContainer Library `json:"MediaContainer"`
+}
+
+type Library struct {
+	Size      int         `json:"size"`
+	Directory []Directory `json:""`
+}
+
+type Directory struct{}
 
 type CollectorPlexServer struct {
 	Address    string
@@ -54,4 +65,7 @@ func (ps *CollectorPlexServer) CurrentSessionsCount() (int, error) {
 	}
 
 	return sessionContainer.SessionsSummary.Size, nil
+}
+
+func (ps *CollectorPlexServer) GetLibrary() {
 }
