@@ -14,21 +14,44 @@ type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-type SessionMediaContainer struct {
-	SessionsSummary SessionsSummary `json:"MediaContainer"`
+// API Response for /status/sections which give the number of current active sessions
+type APIStatusSessions struct {
+	MediaContainer APIStatusSessionsMediaContainer `json:"MediaContainer"`
 }
 
-type SessionsSummary struct {
+type APIStatusSessionsMediaContainer struct {
 	Size int `json:"size"`
 }
 
-type LibraryMediaContainer struct {
-	LibraryContainer Library `json:"MediaContainer"`
+// API Response for /library/sections which gives the library list
+type APILibrarySections struct {
+	MediaContainer APILibrarySectionsMediaContainer `json:"MediaContainer"`
 }
 
+type APILibrarySectionsMediaContainer struct {
+	Directory []APILibrarySectionsDirectory `json:"Directory"`
+}
+
+type APILibrarySectionsDirectory struct {
+	Key   int    `json:"key"`
+	Type  string `json:"type"`
+	Title string `json:"title"`
+}
+
+// API Response for /library/sections/id/all which gives the number of items by library
+type APILibrarySectionsIDAll struct {
+	MediaContainer APILibrarySectionsIDAllMediaContainer `json:"MediaContainer"`
+}
+
+type APILibrarySectionsIDAllMediaContainer struct {
+	Size int `json:"size"`
+}
+
+// CLean model of Plex Media Server library
 type Library struct {
-	Size      int         `json:"size"`
-	Directory []Directory `json:""`
+	Name string
+	Type string
+	Size int
 }
 
 type Directory struct{}
@@ -58,14 +81,15 @@ func (ps *CollectorPlexServer) CurrentSessionsCount() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	var sessionContainer SessionMediaContainer
+	var sessionContainer APIStatusSessions
 
 	if err := json.Unmarshal([]byte(body), &sessionContainer); err != nil {
 		return 0, err
 	}
 
-	return sessionContainer.SessionsSummary.Size, nil
+	return sessionContainer.MediaContainer.Size, nil
 }
 
-func (ps *CollectorPlexServer) GetLibrary() {
+func (ps *CollectorPlexServer) GetLibraries() []Library {
+	return nil
 }
