@@ -84,26 +84,39 @@ func TestCollectorPlexServerCurrentSessionsCountHTTPRequestError(t *testing.T) {
 }
 
 func TestCollectorPlexServerGetLibrary(t *testing.T) {
-	jsonBody := `{"MediaContainer": {"Directory": [{"key": 1, "title": "First", "type": "show"}]}}`
-	client := MockHTTPClient{
-		responses: []*http.Response{
-			&http.Response{
-				StatusCode: 200,
-				Body:       ioutil.NopCloser(bytes.NewBufferString(jsonBody)),
-			},
-			&http.Response{
-				StatusCode: 201,
-				Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 100}}`)),
-			},
+	responses := []*http.Response{
+		&http.Response{
+			StatusCode: 200,
+			Body: ioutil.NopCloser(bytes.NewBufferString(`
+				{
+					"MediaContainer": {
+						"Directory": [
+							{"key": 1, "title": "First", "type": "show"},
+							{"key": 2, "title": "Another", "type": "film"}
+						]
+					}
+				}`),
+			),
 		},
-		responseIndex: 0,
-		err:           nil,
+		&http.Response{
+			StatusCode: 201,
+			Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 100}}`)),
+		},
+		&http.Response{
+			StatusCode: 201,
+			Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 200}}`)),
+		},
 	}
+	client := NewMockHTTPClient(responses, nil)
 
-	plexServer := CollectorPlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: &client}
+	plexServer := CollectorPlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
 	libraries := plexServer.GetLibraries()
 
 	assert.Equal(t, libraries[0].Name, "First")
 	assert.Equal(t, libraries[0].Type, "show")
 	assert.Equal(t, libraries[0].Size, 100)
+
+	assert.Equal(t, libraries[1].Name, "Another")
+	assert.Equal(t, libraries[1].Type, "film")
+	assert.Equal(t, libraries[1].Size, 200)
 }
