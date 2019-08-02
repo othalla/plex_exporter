@@ -83,7 +83,7 @@ func TestCollectorPlexServerCurrentSessionsCountHTTPRequestError(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
-func TestCollectorPlexServerGetLibrary(t *testing.T) {
+func TestCollectorPlexServerGetLibrares(t *testing.T) {
 	responses := []*http.Response{
 		&http.Response{
 			StatusCode: 200,
@@ -99,11 +99,11 @@ func TestCollectorPlexServerGetLibrary(t *testing.T) {
 			),
 		},
 		&http.Response{
-			StatusCode: 201,
+			StatusCode: 200,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 100}}`)),
 		},
 		&http.Response{
-			StatusCode: 201,
+			StatusCode: 200,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 200}}`)),
 		},
 	}
