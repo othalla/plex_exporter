@@ -92,6 +92,7 @@ func (ps *CollectorPlexServer) CurrentSessionsCount() (int, error) {
 	return sessionContainer.MediaContainer.Size, nil
 }
 
+// GetLibraries Return the list of all libraries present on the Plex media object
 func (ps *CollectorPlexServer) GetLibraries() []Library {
 	URL := fmt.Sprintf(URLLibrarySections, ps.Address, ps.Port)
 
