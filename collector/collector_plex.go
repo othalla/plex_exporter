@@ -9,6 +9,8 @@ import (
 
 // TODO CHANGE INSECURE - do we have to query server directly? query it through plex.tv?
 const URLSessions = "http://%s:%d/status/sessions"
+const URLLibrarySections = "http://%s:%d/library/sections"
+const URLLibrarySectionsIDAll = "http://%s:%d/library/sections/%d/all"
 
 type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
@@ -91,5 +93,36 @@ func (ps *CollectorPlexServer) CurrentSessionsCount() (int, error) {
 }
 
 func (ps *CollectorPlexServer) GetLibraries() []Library {
-	return nil
+	URL := fmt.Sprintf(URLLibrarySections, ps.Address, ps.Port)
+
+	request, _ := http.NewRequest("GET", URL, nil)
+	request.Header.Add("X-Plex-Token", ps.Token)
+	request.Header.Add("Accept", "application/json")
+	response, _ := ps.HTTPClient.Do(request)
+
+	body, _ := ioutil.ReadAll(response.Body)
+
+	var librarySectionsContainer APILibrarySections
+
+	json.Unmarshal([]byte(body), &librarySectionsContainer)
+
+	var libraries []Library
+
+	for _, directory := range librarySectionsContainer.MediaContainer.Directory {
+		URL := fmt.Sprintf(URLLibrarySectionsIDAll, ps.Address, ps.Port, directory.Key)
+
+		request, _ := http.NewRequest("GET", URL, nil)
+		request.Header.Add("X-Plex-Token", ps.Token)
+		request.Header.Add("Accept", "application/json")
+		response, _ := ps.HTTPClient.Do(request)
+
+		body, _ := ioutil.ReadAll(response.Body)
+
+		var librarySectionsIDAllContainer APILibrarySectionsIDAll
+
+		json.Unmarshal([]byte(body), &librarySectionsIDAllContainer)
+
+		libraries = append(libraries, Library{Name: directory.Title, Type: directory.Type, Size: librarySectionsIDAllContainer.MediaContainer.Size})
+	}
+	return libraries
 }
