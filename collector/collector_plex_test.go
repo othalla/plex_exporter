@@ -110,7 +110,7 @@ func TestCollectorPlexServerGetLibrary(t *testing.T) {
 	client := NewMockHTTPClient(responses, nil)
 
 	plexServer := CollectorPlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
-	libraries := plexServer.GetLibraries()
+	libraries, _ := plexServer.GetLibraries()
 
 	assert.Equal(t, libraries[0].Name, "First")
 	assert.Equal(t, libraries[0].Type, "show")
@@ -119,4 +119,40 @@ func TestCollectorPlexServerGetLibrary(t *testing.T) {
 	assert.Equal(t, libraries[1].Name, "Another")
 	assert.Equal(t, libraries[1].Type, "film")
 	assert.Equal(t, libraries[1].Size, 200)
+}
+
+func TestCollectorPlexServerGetLibrariesBadJsonResponse(t *testing.T) {
+	responseScenarios := [][]*http.Response{
+		{
+			&http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(`malformed`)),
+			},
+			&http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 100}}`)),
+			},
+		},
+		{
+			&http.Response{
+				StatusCode: 200,
+				Body: ioutil.NopCloser(bytes.NewBufferString(`
+					{"MediaContainer": {"Directory": [{"key": 1, "title": "First", "type": "show"}]}}`)),
+			},
+			&http.Response{
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(bytes.NewBufferString(`malformed`)),
+			},
+		},
+	}
+
+	for _, responseScenario := range responseScenarios {
+		client := NewMockHTTPClient(responseScenario, nil)
+
+		plexServer := CollectorPlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
+		_, err := plexServer.GetLibraries()
+
+		assert.NotNil(t, err)
+	}
+
 }

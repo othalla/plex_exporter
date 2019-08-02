@@ -93,7 +93,7 @@ func (ps *CollectorPlexServer) CurrentSessionsCount() (int, error) {
 }
 
 // GetLibraries Return the list of all libraries present on the Plex media object
-func (ps *CollectorPlexServer) GetLibraries() []Library {
+func (ps *CollectorPlexServer) GetLibraries() ([]Library, error) {
 	URL := fmt.Sprintf(URLLibrarySections, ps.Address, ps.Port)
 
 	request, _ := http.NewRequest("GET", URL, nil)
@@ -105,7 +105,10 @@ func (ps *CollectorPlexServer) GetLibraries() []Library {
 
 	var librarySectionsContainer APILibrarySections
 
-	json.Unmarshal([]byte(body), &librarySectionsContainer)
+	err := json.Unmarshal([]byte(body), &librarySectionsContainer)
+	if err != nil {
+		return nil, err
+	}
 
 	var libraries []Library
 
@@ -121,9 +124,12 @@ func (ps *CollectorPlexServer) GetLibraries() []Library {
 
 		var librarySectionsIDAllContainer APILibrarySectionsIDAll
 
-		json.Unmarshal([]byte(body), &librarySectionsIDAllContainer)
+		err := json.Unmarshal([]byte(body), &librarySectionsIDAllContainer)
+		if err != nil {
+			return nil, err
+		}
 
 		libraries = append(libraries, Library{Name: directory.Title, Type: directory.Type, Size: librarySectionsIDAllContainer.MediaContainer.Size})
 	}
-	return libraries
+	return libraries, nil
 }
