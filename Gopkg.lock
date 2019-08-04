@@ -42,11 +42,12 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:91b312cc53220df6fc9e27537ac4cfacf16a8d4907214f8c5e86996c240b5600"
+  digest = "1:db583937a89f65f8d69df4112a81216dfb8dcfdd881edfb108b2491e0f293b04"
   name = "github.com/prometheus/client_golang"
   packages = [
     "prometheus",
     "prometheus/internal",
+    "prometheus/promhttp",
     "prometheus/testutil",
   ]
   pruneopts = "UT"
@@ -113,6 +114,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/prometheus/client_golang/prometheus",
+    "github.com/prometheus/client_golang/prometheus/promhttp",
     "github.com/prometheus/client_golang/prometheus/testutil",
     "github.com/stretchr/testify/assert",
     "github.com/urfave/cli",
