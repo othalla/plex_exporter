@@ -15,10 +15,20 @@ var (
 			Help:      "Total of actives sessions on remote plex media server",
 		},
 	)
+	plexLibrariesGauge = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: "plex_media_server",
+			Subsystem: "libraries",
+			Name:      "media_count",
+			Help:      "Total of media in a given library",
+		},
+		[]string{"name"},
+	)
 )
 
 type CollectorPlex interface {
 	CurrentSessionsCount() (int, error)
+	GetLibraries() ([]Library, error)
 }
 
 type PlexExporter struct {
@@ -35,5 +45,12 @@ func (pe *PlexExporter) Collect(ch chan<- prometheus.Metric) {
 	}
 
 	plexSessionsGauge.Set(float64(sessions))
+
 	ch <- plexSessionsGauge
+
+	libraries, _ := pe.PlexServer.GetLibraries()
+
+	for _, library := range libraries {
+		plexLibrariesGauge.With(prometheus.Labels{"name": library.Name}).Set(float64(library.Size))
+	}
 }
