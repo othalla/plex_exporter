@@ -1,7 +1,7 @@
 package collector
 
 import (
-	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -22,22 +22,6 @@ func (mps *MockPlexServer) GetLibraries() ([]Library, error) {
 	return mps.Libraries, nil
 }
 
-func TestSetPlexSessionsMetrics(t *testing.T) {
-	ps := &MockPlexServer{Sessions: 17}
-	pe := &PlexExporter{PlexServer: ps}
-
-	ch := make(chan prometheus.Metric)
-	go func() {
-		pe.Collect(ch)
-		close(ch)
-	}()
-
-	for range ch {
-	}
-
-	assert.Equal(t, float64(17), testutil.ToFloat64(plexSessionsGauge))
-}
-
 func TestSetPlexLibrariesMetrics(t *testing.T) {
 	ps := &MockPlexServer{Libraries: []Library{
 		{Name: "mylib", Type: "TV Shows", Size: 200},
@@ -54,6 +38,26 @@ func TestSetPlexLibrariesMetrics(t *testing.T) {
 	for range ch {
 	}
 
-	gauge, _ := plexLibrariesGauge.GetMetricWithLabelValues("mylib")
-	fmt.Println(testutil.ToFloat64(gauge))
+	gaugeOne, _ := plexLibrariesGauge.GetMetricWithLabelValues("mylib")
+	assert.Equal(t, float64(200), testutil.ToFloat64(gaugeOne))
+	gaugeTwo, _ := plexLibrariesGauge.GetMetricWithLabelValues("anotherlib")
+	assert.Equal(t, float64(500), testutil.ToFloat64(gaugeTwo))
+}
+
+func TestExporter(t *testing.T) {
+	const metadata = `
+# HELP plex_sessions_active_count Number of active Plex sessions
+# TYPE plex_sessions_active_count Gauge
+	`
+
+	ps := &MockPlexServer{Sessions: 17}
+	pe := &PlexExporter{PlexServer: ps}
+
+	expected := `
+plex_sessions_active_count 17
+	`
+
+	if err := testutil.CollectAndCompare(pe, strings.NewReader(metadata+expected)); err != nil {
+		t.Errorf("unexpected collecting result:\n%s", err)
+	}
 }

@@ -7,13 +7,9 @@ import (
 )
 
 var (
-	plexSessionsGauge = prometheus.NewGauge(
-		prometheus.GaugeOpts{
-			Namespace: "plex_media_server",
-			Subsystem: "sessions",
-			Name:      "active_total",
-			Help:      "Total of actives sessions on remote plex media server",
-		},
+	pmsSessions = prometheus.NewDesc("plex_sessions_active_count",
+		"Number of active Plex sessions",
+		[]string{}, nil,
 	)
 	plexLibrariesGauge = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -36,6 +32,8 @@ type PlexExporter struct {
 }
 
 func (pe *PlexExporter) Describe(ch chan<- *prometheus.Desc) {
+
+	ch <- pmsSessions
 }
 
 func (pe *PlexExporter) Collect(ch chan<- prometheus.Metric) {
@@ -44,9 +42,7 @@ func (pe *PlexExporter) Collect(ch chan<- prometheus.Metric) {
 		log.Print(err)
 	}
 
-	plexSessionsGauge.Set(float64(sessions))
-
-	ch <- plexSessionsGauge
+	ch <- prometheus.MustNewConstMetric(pmsSessions, prometheus.GaugeValue, float64(sessions))
 
 	libraries, _ := pe.PlexServer.GetLibraries()
 
