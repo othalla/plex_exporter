@@ -44,7 +44,7 @@ func TestSetPlexLibrariesMetrics(t *testing.T) {
 	assert.Equal(t, float64(500), testutil.ToFloat64(gaugeTwo))
 }
 
-func TestExporter(t *testing.T) {
+func TestExporterGetSessions(t *testing.T) {
 	const metadata = `
 # HELP plex_sessions_active_count Number of active Plex sessions
 # TYPE plex_sessions_active_count Gauge
