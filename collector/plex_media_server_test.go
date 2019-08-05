@@ -91,8 +91,8 @@ func TestCollectorPlexServerGetLibrares(t *testing.T) {
 				{
 					"MediaContainer": {
 						"Directory": [
-							{"key": 1, "title": "First", "type": "show"},
-							{"key": 2, "title": "Another", "type": "film"}
+							{"key": "1", "title": "First", "type": "show"},
+							{"key": "2", "title": "Another", "type": "film"}
 						]
 					}
 				}`),
@@ -137,7 +137,7 @@ func TestCollectorPlexServerGetLibrariesBadJsonResponse(t *testing.T) {
 			&http.Response{
 				StatusCode: 200,
 				Body: ioutil.NopCloser(bytes.NewBufferString(`
-					{"MediaContainer": {"Directory": [{"key": 1, "title": "First", "type": "show"}]}}`)),
+					{"MediaContainer": {"Directory": [{"key": "1", "title": "First", "type": "show"}]}}`)),
 			},
 			&http.Response{
 				StatusCode: 200,

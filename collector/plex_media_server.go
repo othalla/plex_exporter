@@ -10,7 +10,7 @@ import (
 // TODO CHANGE INSECURE - do we have to query server directly? query it through plex.tv?
 const URLSessions = "http://%s:%d/status/sessions"
 const URLLibrarySections = "http://%s:%d/library/sections"
-const URLLibrarySectionsIDAll = "http://%s:%d/library/sections/%d/all"
+const URLLibrarySectionsIDAll = "http://%s:%d/library/sections/%s/all"
 
 type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
@@ -35,7 +35,7 @@ type APILibrarySectionsMediaContainer struct {
 }
 
 type APILibrarySectionsDirectory struct {
-	Key   int    `json:"key"`
+	Key   string `json:"key"`
 	Type  string `json:"type"`
 	Title string `json:"title"`
 }
