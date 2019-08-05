@@ -6,46 +6,47 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-var (
-	pmsSessions = prometheus.NewDesc("plex_sessions_active_count",
-		"Number of active Plex sessions",
-		[]string{}, nil,
-	)
-	plexLibrariesGauge = prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Namespace: "plex_media_server",
-			Subsystem: "libraries",
-			Name:      "media_count",
-			Help:      "Total of media in a given library",
-		},
-		[]string{"name"},
-	)
-)
-
 type Plex interface {
 	CurrentSessionsCount() (int, error)
 	GetLibraries() ([]Library, error)
 }
 
+func NewPlexMediaServerCollector(server Plex) *PlexMediaServerCollector {
+	return &PlexMediaServerCollector{MetricsSessions: prometheus.NewDesc("plex_sessions_active_count",
+		"Number of active Plex sessions",
+		[]string{}, nil,
+	),
+		MetricsLibraries: prometheus.NewDesc("plex_media_server_library_media_count",
+			"Number of medias in a plex library",
+			[]string{"name", "type"},
+			nil,
+		),
+		Server: server,
+	}
+}
+
 type PlexMediaServerCollector struct {
-	PlexServer Plex
+	MetricsSessions  *prometheus.Desc
+	MetricsLibraries *prometheus.Desc
+	Server           Plex
 }
 
 func (p *PlexMediaServerCollector) Describe(ch chan<- *prometheus.Desc) {
-	ch <- pmsSessions
+	ch <- p.MetricsSessions
+	ch <- p.MetricsLibraries
 }
 
 func (p *PlexMediaServerCollector) Collect(ch chan<- prometheus.Metric) {
-	sessions, err := p.PlexServer.CurrentSessionsCount()
+	sessions, err := p.Server.CurrentSessionsCount()
 	if err != nil {
 		log.Print(err)
 	}
 
-	ch <- prometheus.MustNewConstMetric(pmsSessions, prometheus.GaugeValue, float64(sessions))
+	ch <- prometheus.MustNewConstMetric(p.MetricsSessions, prometheus.GaugeValue, float64(sessions))
 
-	libraries, _ := p.PlexServer.GetLibraries()
+	libraries, _ := p.Server.GetLibraries()
 
 	for _, library := range libraries {
-		plexLibrariesGauge.With(prometheus.Labels{"name": library.Name}).Set(float64(library.Size))
+		ch <- prometheus.MustNewConstMetric(p.MetricsLibraries, prometheus.GaugeValue, float64(library.Size), library.Name, library.Type)
 	}
 }

@@ -4,9 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/testutil"
-	"github.com/stretchr/testify/assert"
 )
 
 type MockPlexMediaServer struct {
@@ -22,42 +20,40 @@ func (mps *MockPlexMediaServer) GetLibraries() ([]Library, error) {
 	return mps.Libraries, nil
 }
 
-func TestSetPlexLibrariesMetrics(t *testing.T) {
-	mockServer := &MockPlexMediaServer{Libraries: []Library{
-		{Name: "mylib", Type: "TV Shows", Size: 200},
-		{Name: "anotherlib", Type: "Movie", Size: 500},
-	}}
-	collector := &PlexMediaServerCollector{PlexServer: mockServer}
-
-	ch := make(chan prometheus.Metric)
-	go func() {
-		collector.Collect(ch)
-		close(ch)
-	}()
-
-	for range ch {
-	}
-
-	gaugeOne, _ := plexLibrariesGauge.GetMetricWithLabelValues("mylib")
-	assert.Equal(t, float64(200), testutil.ToFloat64(gaugeOne))
-	gaugeTwo, _ := plexLibrariesGauge.GetMetricWithLabelValues("anotherlib")
-	assert.Equal(t, float64(500), testutil.ToFloat64(gaugeTwo))
-}
-
-func TestExporterGetSessions(t *testing.T) {
-	const metadata = `
-# HELP plex_sessions_active_count Number of active Plex sessions
-# TYPE plex_sessions_active_count Gauge
-	`
+func TestPlexMediaServerCollectorMetricsSessions(t *testing.T) {
 
 	mockServer := &MockPlexMediaServer{Sessions: 17}
-	collector := &PlexMediaServerCollector{PlexServer: mockServer}
+	collector := NewPlexMediaServerCollector(mockServer)
 
 	expected := `
+# HELP plex_sessions_active_count Number of active Plex sessions
+# TYPE plex_sessions_active_count Gauge
 plex_sessions_active_count 17
 	`
 
-	if err := testutil.CollectAndCompare(collector, strings.NewReader(metadata+expected)); err != nil {
+	if err := testutil.CollectAndCompare(collector, strings.NewReader(expected)); err != nil {
+		t.Errorf("unexpected collecting result:\n%s", err)
+	}
+}
+
+func TestPlexMediaServerCollectorMetricsLibraries(t *testing.T) {
+	mockServer := &MockPlexMediaServer{Libraries: []Library{
+		{Name: "mylib", Type: "TV Shows", Size: 200},
+		{Name: "anotherlib", Type: "Movie", Size: 340},
+	}}
+	collector := NewPlexMediaServerCollector(mockServer)
+
+	expected := `
+# HELP plex_media_server_library_media_count Number of medias in a plex library
+# TYPE plex_media_server_library_media_count Gauge
+plex_media_server_library_media_count{name="mylib", type="TV Shows"} 200
+plex_media_server_library_media_count{name="anotherlib", type="Movie"} 340
+# HELP plex_sessions_active_count Number of active Plex sessions
+# TYPE plex_sessions_active_count Gauge
+plex_sessions_active_count 0
+	`
+
+	if err := testutil.CollectAndCompare(collector, strings.NewReader(expected)); err != nil {
 		t.Errorf("unexpected collecting result:\n%s", err)
 	}
 }

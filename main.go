@@ -45,7 +45,7 @@ func runExporter(c *cli.Context) error {
 		Token:      config.Server.Token,
 		HTTPClient: client,
 	}
-	collector := &collector.PlexMediaServerCollector{PlexServer: server}
+	collector := collector.NewPlexMediaServerCollector(server)
 
 	prometheus.MustRegister(collector)
 
