@@ -40,15 +40,14 @@ func runExporter(c *cli.Context) error {
 
 	client := &http.Client{}
 
-	plexServerCollector := &collector.PlexMediaServer{Address: config.Server.Address,
+	server := &collector.PlexMediaServer{Address: config.Server.Address,
 		Port:       config.Server.Port,
 		Token:      config.Server.Token,
 		HTTPClient: client,
 	}
+	collector := &collector.PlexMediaServerCollector{PlexServer: server}
 
-	plexExporter := &collector.PlexExporter{PlexServer: plexServerCollector}
-
-	prometheus.MustRegister(plexExporter)
+	prometheus.MustRegister(collector)
 
 	log.Print("Starting exporter...")
 	http.Handle("/metrics", promhttp.Handler())

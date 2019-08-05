@@ -23,15 +23,15 @@ func (mps *MockPlexMediaServer) GetLibraries() ([]Library, error) {
 }
 
 func TestSetPlexLibrariesMetrics(t *testing.T) {
-	ps := &MockPlexMediaServer{Libraries: []Library{
+	mockServer := &MockPlexMediaServer{Libraries: []Library{
 		{Name: "mylib", Type: "TV Shows", Size: 200},
 		{Name: "anotherlib", Type: "Movie", Size: 500},
 	}}
-	pe := &PlexExporter{PlexServer: ps}
+	collector := &PlexMediaServerCollector{PlexServer: mockServer}
 
 	ch := make(chan prometheus.Metric)
 	go func() {
-		pe.Collect(ch)
+		collector.Collect(ch)
 		close(ch)
 	}()
 
@@ -50,14 +50,14 @@ func TestExporterGetSessions(t *testing.T) {
 # TYPE plex_sessions_active_count Gauge
 	`
 
-	ps := &MockPlexMediaServer{Sessions: 17}
-	pe := &PlexExporter{PlexServer: ps}
+	mockServer := &MockPlexMediaServer{Sessions: 17}
+	collector := &PlexMediaServerCollector{PlexServer: mockServer}
 
 	expected := `
 plex_sessions_active_count 17
 	`
 
-	if err := testutil.CollectAndCompare(pe, strings.NewReader(metadata+expected)); err != nil {
+	if err := testutil.CollectAndCompare(collector, strings.NewReader(metadata+expected)); err != nil {
 		t.Errorf("unexpected collecting result:\n%s", err)
 	}
 }

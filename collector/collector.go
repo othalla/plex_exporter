@@ -22,29 +22,28 @@ var (
 	)
 )
 
-type CollectorPlex interface {
+type Plex interface {
 	CurrentSessionsCount() (int, error)
 	GetLibraries() ([]Library, error)
 }
 
-type PlexExporter struct {
-	PlexServer CollectorPlex
+type PlexMediaServerCollector struct {
+	PlexServer Plex
 }
 
-func (pe *PlexExporter) Describe(ch chan<- *prometheus.Desc) {
-
+func (p *PlexMediaServerCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- pmsSessions
 }
 
-func (pe *PlexExporter) Collect(ch chan<- prometheus.Metric) {
-	sessions, err := pe.PlexServer.CurrentSessionsCount()
+func (p *PlexMediaServerCollector) Collect(ch chan<- prometheus.Metric) {
+	sessions, err := p.PlexServer.CurrentSessionsCount()
 	if err != nil {
 		log.Print(err)
 	}
 
 	ch <- prometheus.MustNewConstMetric(pmsSessions, prometheus.GaugeValue, float64(sessions))
 
-	libraries, _ := pe.PlexServer.GetLibraries()
+	libraries, _ := p.PlexServer.GetLibraries()
 
 	for _, library := range libraries {
 		plexLibrariesGauge.With(prometheus.Labels{"name": library.Name}).Set(float64(library.Size))
