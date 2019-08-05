@@ -44,7 +44,10 @@ func (p *PlexMediaServerCollector) Collect(ch chan<- prometheus.Metric) {
 
 	ch <- prometheus.MustNewConstMetric(p.MetricsSessions, prometheus.GaugeValue, float64(sessions))
 
-	libraries, _ := p.Server.GetLibraries()
+	libraries, err := p.Server.GetLibraries()
+	if err != nil {
+		log.Print(err)
+	}
 
 	for _, library := range libraries {
 		ch <- prometheus.MustNewConstMetric(p.MetricsLibraries, prometheus.GaugeValue, float64(library.Size), library.Name, library.Type)
