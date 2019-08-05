@@ -58,20 +58,20 @@ type Library struct {
 
 type Directory struct{}
 
-type CollectorPlexServer struct {
+type PlexMediaServer struct {
 	Address    string
 	Port       int
 	Token      string
 	HTTPClient HTTPClient
 }
 
-func (ps *CollectorPlexServer) CurrentSessionsCount() (int, error) {
-	url := fmt.Sprintf(URLSessions, ps.Address, ps.Port)
+func (p *PlexMediaServer) CurrentSessionsCount() (int, error) {
+	url := fmt.Sprintf(URLSessions, p.Address, p.Port)
 
 	request, _ := http.NewRequest("GET", url, nil)
-	request.Header.Add("X-Plex-Token", ps.Token)
+	request.Header.Add("X-Plex-Token", p.Token)
 	request.Header.Add("Accept", "application/json")
-	response, err := ps.HTTPClient.Do(request)
+	response, err := p.HTTPClient.Do(request)
 	if err != nil {
 		return 0, err
 	}
@@ -93,13 +93,13 @@ func (ps *CollectorPlexServer) CurrentSessionsCount() (int, error) {
 }
 
 // GetLibraries Return the list of all libraries present on the Plex media object
-func (ps *CollectorPlexServer) GetLibraries() ([]Library, error) {
-	URL := fmt.Sprintf(URLLibrarySections, ps.Address, ps.Port)
+func (p *PlexMediaServer) GetLibraries() ([]Library, error) {
+	URL := fmt.Sprintf(URLLibrarySections, p.Address, p.Port)
 
 	request, _ := http.NewRequest("GET", URL, nil)
-	request.Header.Add("X-Plex-Token", ps.Token)
+	request.Header.Add("X-Plex-Token", p.Token)
 	request.Header.Add("Accept", "application/json")
-	response, _ := ps.HTTPClient.Do(request)
+	response, _ := p.HTTPClient.Do(request)
 
 	body, _ := ioutil.ReadAll(response.Body)
 
@@ -113,12 +113,12 @@ func (ps *CollectorPlexServer) GetLibraries() ([]Library, error) {
 	var libraries []Library
 
 	for _, directory := range librarySectionsContainer.MediaContainer.Directory {
-		URL := fmt.Sprintf(URLLibrarySectionsIDAll, ps.Address, ps.Port, directory.Key)
+		URL := fmt.Sprintf(URLLibrarySectionsIDAll, p.Address, p.Port, directory.Key)
 
 		request, _ := http.NewRequest("GET", URL, nil)
-		request.Header.Add("X-Plex-Token", ps.Token)
+		request.Header.Add("X-Plex-Token", p.Token)
 		request.Header.Add("Accept", "application/json")
-		response, _ := ps.HTTPClient.Do(request)
+		response, _ := p.HTTPClient.Do(request)
 
 		body, _ := ioutil.ReadAll(response.Body)
 

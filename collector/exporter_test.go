@@ -9,21 +9,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type MockPlexServer struct {
+type MockPlexMediaServer struct {
 	Sessions  int
 	Libraries []Library
 }
 
-func (mps *MockPlexServer) CurrentSessionsCount() (int, error) {
+func (mps *MockPlexMediaServer) CurrentSessionsCount() (int, error) {
 	return mps.Sessions, nil
 }
 
-func (mps *MockPlexServer) GetLibraries() ([]Library, error) {
+func (mps *MockPlexMediaServer) GetLibraries() ([]Library, error) {
 	return mps.Libraries, nil
 }
 
 func TestSetPlexLibrariesMetrics(t *testing.T) {
-	ps := &MockPlexServer{Libraries: []Library{
+	ps := &MockPlexMediaServer{Libraries: []Library{
 		{Name: "mylib", Type: "TV Shows", Size: 200},
 		{Name: "anotherlib", Type: "Movie", Size: 500},
 	}}
@@ -50,7 +50,7 @@ func TestExporterGetSessions(t *testing.T) {
 # TYPE plex_sessions_active_count Gauge
 	`
 
-	ps := &MockPlexServer{Sessions: 17}
+	ps := &MockPlexMediaServer{Sessions: 17}
 	pe := &PlexExporter{PlexServer: ps}
 
 	expected := `

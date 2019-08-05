@@ -40,7 +40,7 @@ func runExporter(c *cli.Context) error {
 
 	client := &http.Client{}
 
-	plexServerCollector := &collector.CollectorPlexServer{Address: config.Server.Address,
+	plexServerCollector := &collector.PlexMediaServer{Address: config.Server.Address,
 		Port:       config.Server.Port,
 		Token:      config.Server.Token,
 		HTTPClient: client,

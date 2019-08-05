@@ -42,7 +42,7 @@ func TestCollectorPlexServerCurrentSessionsCount(t *testing.T) {
 	}
 	client := NewMockHTTPClient(responses, nil)
 
-	plexServer := CollectorPlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
+	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
 	sessionCounter, _ := plexServer.CurrentSessionsCount()
 	assert.Equal(t, sessionCounter, 3)
 }
@@ -56,7 +56,7 @@ func TestPCollectorlexServerCurrentSessionsCountBadJsonResponse(t *testing.T) {
 	}
 	client := NewMockHTTPClient(responses, nil)
 
-	plexServer := CollectorPlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
+	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
 	_, err := plexServer.CurrentSessionsCount()
 	assert.NotNil(t, err)
 }
@@ -69,7 +69,7 @@ func TestCollectorPlexServerCurrentSessionsCountBadStatusCode(t *testing.T) {
 	}
 	client := NewMockHTTPClient(responses, nil)
 
-	plexServer := CollectorPlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
+	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
 	_, err := plexServer.CurrentSessionsCount()
 	assert.NotNil(t, err)
 	assert.Equal(t, err, fmt.Errorf("Got bad status code 500 from server"))
@@ -78,7 +78,7 @@ func TestCollectorPlexServerCurrentSessionsCountBadStatusCode(t *testing.T) {
 func TestCollectorPlexServerCurrentSessionsCountHTTPRequestError(t *testing.T) {
 	client := NewMockHTTPClient(nil, errors.New("http error"))
 
-	plexServer := CollectorPlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
+	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
 	_, err := plexServer.CurrentSessionsCount()
 	assert.NotNil(t, err)
 }
@@ -109,7 +109,7 @@ func TestCollectorPlexServerGetLibrares(t *testing.T) {
 	}
 	client := NewMockHTTPClient(responses, nil)
 
-	plexServer := CollectorPlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
+	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
 	libraries, _ := plexServer.GetLibraries()
 
 	assert.Equal(t, libraries[0].Name, "First")
@@ -149,7 +149,7 @@ func TestCollectorPlexServerGetLibrariesBadJsonResponse(t *testing.T) {
 	for _, responseScenario := range responseScenarios {
 		client := NewMockHTTPClient(responseScenario, nil)
 
-		plexServer := CollectorPlexServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
+		plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
 		_, err := plexServer.GetLibraries()
 
 		assert.NotNil(t, err)
