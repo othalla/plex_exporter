@@ -156,3 +156,18 @@ func TestCollectorPlexServerGetLibrariesBadJsonResponse(t *testing.T) {
 	}
 
 }
+
+func TestCollectorPlexServerGetTranscodeSessions(t *testing.T) {
+
+	responses := []*http.Response{
+		&http.Response{
+			StatusCode: 200,
+			Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 2}}`)),
+		},
+	}
+	client := NewMockHTTPClient(responses, nil)
+
+	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
+	sessionCounter := plexServer.GetTranscodeSessions()
+	assert.Equal(t, sessionCounter, 2)
+}

@@ -11,6 +11,7 @@ import (
 const URLSessions = "http://%s:%d/status/sessions"
 const URLLibrarySections = "http://%s:%d/library/sections"
 const URLLibrarySectionsIDAll = "http://%s:%d/library/sections/%s/all"
+const URLTranscodeSessions = "https://%s:%d/transcode/seccions"
 
 type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
@@ -46,6 +47,15 @@ type APILibrarySectionsIDAll struct {
 }
 
 type APILibrarySectionsIDAllMediaContainer struct {
+	Size int `json:"size"`
+}
+
+// API Response for /transcode/sessions which give the number of current active transcoding sessions
+type APITranscodeSessions struct {
+	MediaContainer APITranscodeSessionsMediaContainer `json:"MediaContainer"`
+}
+
+type APITranscodeSessionsMediaContainer struct {
 	Size int `json:"size"`
 }
 
@@ -90,6 +100,22 @@ func (p *PlexMediaServer) CurrentSessionsCount() (int, error) {
 	}
 
 	return sessionContainer.MediaContainer.Size, nil
+}
+
+func (p *PlexMediaServer) GetTranscodeSessions() int {
+	url := fmt.Sprintf(URLSessions, p.Address, p.Port)
+	request, _ := http.NewRequest("GET", url, nil)
+	request.Header.Add("X-Plex-Token", p.Token)
+	request.Header.Add("Accept", "application/json")
+	response, _ := p.HTTPClient.Do(request)
+
+	body, _ := ioutil.ReadAll(response.Body)
+
+	var transCodeSessionsContainer APITranscodeSessions
+
+	json.Unmarshal([]byte(body), &transCodeSessionsContainer)
+
+	return transCodeSessionsContainer.MediaContainer.Size
 }
 
 // GetLibraries Return the list of all libraries present on the Plex media object
