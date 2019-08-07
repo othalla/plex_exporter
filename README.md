@@ -5,6 +5,11 @@
 Prometheus exporter for Plex Media Server.
 This exporter query your Plex Media Serverinstallation directly without passing by Plex.tv.
 
+## Metrics
+
+- Sessions : total active
+- Libraries : number of medias
+
 ## TODO
 
 Secure transport (with TLS) while requesting metrics. Server token is actually passed through
