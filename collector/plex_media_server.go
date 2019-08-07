@@ -102,6 +102,7 @@ func (p *PlexMediaServer) CurrentSessionsCount() (int, error) {
 	return sessionContainer.MediaContainer.Size, nil
 }
 
+// GetTranscodeSessions returns the number of current transcoding sessions
 func (p *PlexMediaServer) GetTranscodeSessions() int {
 	url := fmt.Sprintf(URLSessions, p.Address, p.Port)
 	request, _ := http.NewRequest("GET", url, nil)
@@ -118,7 +119,7 @@ func (p *PlexMediaServer) GetTranscodeSessions() int {
 	return transCodeSessionsContainer.MediaContainer.Size
 }
 
-// GetLibraries Return the list of all libraries present on the Plex media object
+// GetLibraries returns the list of all libraries present on the Plex media object
 func (p *PlexMediaServer) GetLibraries() ([]Library, error) {
 	URL := fmt.Sprintf(URLLibrarySections, p.Address, p.Port)
 
