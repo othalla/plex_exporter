@@ -1,4 +1,9 @@
-# plex_exporter
+# pmsx_exporter
+
+## Description
+
+Prometheus exporter for Plex Media Server.
+This exporter query your Plex Media Serverinstallation directly without passing by Plex.tv.
 
 ## TODO
 
