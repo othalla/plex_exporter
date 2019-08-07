@@ -78,14 +78,14 @@ type PlexMediaServer struct {
 func (p *PlexMediaServer) CurrentSessionsCount() (int, error) {
 	url := fmt.Sprintf(URLSessions, p.Address, p.Port)
 
-	request, _ := http.NewRequest("GET", url, nil)
+	request, _ := http.NewRequest(http.MethodGet, url, nil)
 	request.Header.Add("X-Plex-Token", p.Token)
 	request.Header.Add("Accept", "application/json")
 	response, err := p.HTTPClient.Do(request)
 	if err != nil {
 		return 0, err
 	}
-	if response.StatusCode != 200 {
+	if response.StatusCode != http.StatusOK {
 		return 0, fmt.Errorf("Got bad status code %d from server", response.StatusCode)
 	}
 
@@ -105,7 +105,7 @@ func (p *PlexMediaServer) CurrentSessionsCount() (int, error) {
 // GetTranscodeSessions returns the number of current transcoding sessions
 func (p *PlexMediaServer) GetTranscodeSessions() int {
 	url := fmt.Sprintf(URLSessions, p.Address, p.Port)
-	request, _ := http.NewRequest("GET", url, nil)
+	request, _ := http.NewRequest(http.MethodGet, url, nil)
 	request.Header.Add("X-Plex-Token", p.Token)
 	request.Header.Add("Accept", "application/json")
 	response, _ := p.HTTPClient.Do(request)
@@ -123,7 +123,7 @@ func (p *PlexMediaServer) GetTranscodeSessions() int {
 func (p *PlexMediaServer) GetLibraries() ([]Library, error) {
 	URL := fmt.Sprintf(URLLibrarySections, p.Address, p.Port)
 
-	request, _ := http.NewRequest("GET", URL, nil)
+	request, _ := http.NewRequest(http.MethodGet, URL, nil)
 	request.Header.Add("X-Plex-Token", p.Token)
 	request.Header.Add("Accept", "application/json")
 	response, _ := p.HTTPClient.Do(request)
@@ -142,7 +142,7 @@ func (p *PlexMediaServer) GetLibraries() ([]Library, error) {
 	for _, directory := range librarySectionsContainer.MediaContainer.Directory {
 		URL := fmt.Sprintf(URLLibrarySectionsIDAll, p.Address, p.Port, directory.Key)
 
-		request, _ := http.NewRequest("GET", URL, nil)
+		request, _ := http.NewRequest(http.MethodGet, URL, nil)
 		request.Header.Add("X-Plex-Token", p.Token)
 		request.Header.Add("Accept", "application/json")
 		response, _ := p.HTTPClient.Do(request)

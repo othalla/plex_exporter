@@ -36,7 +36,7 @@ func TestCollectorPlexServerCurrentSessionsCount(t *testing.T) {
 
 	responses := []*http.Response{
 		&http.Response{
-			StatusCode: 200,
+			StatusCode: http.StatusOK,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 3}}`)),
 		},
 	}
@@ -50,7 +50,7 @@ func TestCollectorPlexServerCurrentSessionsCount(t *testing.T) {
 func TestPCollectorlexServerCurrentSessionsCountBadJsonResponse(t *testing.T) {
 	responses := []*http.Response{
 		&http.Response{
-			StatusCode: 200,
+			StatusCode: http.StatusOK,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(`malformed`)),
 		},
 	}
@@ -86,7 +86,7 @@ func TestCollectorPlexServerCurrentSessionsCountHTTPRequestError(t *testing.T) {
 func TestCollectorPlexServerGetLibrares(t *testing.T) {
 	responses := []*http.Response{
 		&http.Response{
-			StatusCode: 200,
+			StatusCode: http.StatusOK,
 			Body: ioutil.NopCloser(bytes.NewBufferString(`
 				{
 					"MediaContainer": {
@@ -99,11 +99,11 @@ func TestCollectorPlexServerGetLibrares(t *testing.T) {
 			),
 		},
 		&http.Response{
-			StatusCode: 200,
+			StatusCode: http.StatusOK,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 100}}`)),
 		},
 		&http.Response{
-			StatusCode: 200,
+			StatusCode: http.StatusOK,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 200}}`)),
 		},
 	}
@@ -125,22 +125,22 @@ func TestCollectorPlexServerGetLibrariesBadJsonResponse(t *testing.T) {
 	responseScenarios := [][]*http.Response{
 		{
 			&http.Response{
-				StatusCode: 200,
+				StatusCode: http.StatusOK,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(`malformed`)),
 			},
 			&http.Response{
-				StatusCode: 200,
+				StatusCode: http.StatusOK,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 100}}`)),
 			},
 		},
 		{
 			&http.Response{
-				StatusCode: 200,
+				StatusCode: http.StatusOK,
 				Body: ioutil.NopCloser(bytes.NewBufferString(`
 					{"MediaContainer": {"Directory": [{"key": "1", "title": "First", "type": "show"}]}}`)),
 			},
 			&http.Response{
-				StatusCode: 200,
+				StatusCode: http.StatusOK,
 				Body:       ioutil.NopCloser(bytes.NewBufferString(`malformed`)),
 			},
 		},
@@ -161,7 +161,7 @@ func TestCollectorPlexServerGetTranscodeSessions(t *testing.T) {
 
 	responses := []*http.Response{
 		&http.Response{
-			StatusCode: 200,
+			StatusCode: http.StatusOK,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 2}}`)),
 		},
 	}
