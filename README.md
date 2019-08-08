@@ -3,7 +3,7 @@
 ## Description
 
 Prometheus exporter for Plex Media Server.
-This exporter query your Plex Media Serverinstallation directly without passing by Plex.tv.
+This exporter query your Plex Media Server installation directly without passing by Plex.tv.
 
 ## Metrics
 
