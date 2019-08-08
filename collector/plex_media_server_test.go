@@ -35,7 +35,7 @@ func (c *MockHTTPClient) Do(req *http.Request) (*http.Response, error) {
 func TestCollectorPlexServerCurrentSessionsCount(t *testing.T) {
 
 	responses := []*http.Response{
-		&http.Response{
+		{
 			StatusCode: http.StatusOK,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 3}}`)),
 		},
@@ -49,7 +49,7 @@ func TestCollectorPlexServerCurrentSessionsCount(t *testing.T) {
 
 func TestPCollectorlexServerCurrentSessionsCountBadJsonResponse(t *testing.T) {
 	responses := []*http.Response{
-		&http.Response{
+		{
 			StatusCode: http.StatusOK,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(`malformed`)),
 		},
@@ -63,7 +63,7 @@ func TestPCollectorlexServerCurrentSessionsCountBadJsonResponse(t *testing.T) {
 
 func TestCollectorPlexServerCurrentSessionsCountBadStatusCode(t *testing.T) {
 	responses := []*http.Response{
-		&http.Response{
+		{
 			StatusCode: 500,
 		},
 	}
@@ -85,7 +85,7 @@ func TestCollectorPlexServerCurrentSessionsCountHTTPRequestError(t *testing.T) {
 
 func TestCollectorPlexServerGetTranscodeSessions(t *testing.T) {
 	responses := []*http.Response{
-		&http.Response{
+		{
 			StatusCode: http.StatusOK,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 2}}`)),
 		},
@@ -99,7 +99,7 @@ func TestCollectorPlexServerGetTranscodeSessions(t *testing.T) {
 
 func TestCollectorPlexServerGetTranscodeSessionsBadJsonResponse(t *testing.T) {
 	responses := []*http.Response{
-		&http.Response{
+		{
 			StatusCode: http.StatusOK,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(`malformed`)),
 		},
@@ -121,7 +121,7 @@ func TestCollectorPlexServerGetTranscodeSessionsHTTPRequestError(t *testing.T) {
 
 func TestCollectorPlexServerGetTranscodeSessionsCountBadStatusCode(t *testing.T) {
 	responses := []*http.Response{
-		&http.Response{
+		{
 			StatusCode: 500,
 		},
 	}
@@ -135,7 +135,7 @@ func TestCollectorPlexServerGetTranscodeSessionsCountBadStatusCode(t *testing.T)
 
 func TestCollectorPlexServerGetLibrares(t *testing.T) {
 	responses := []*http.Response{
-		&http.Response{
+		{
 			StatusCode: http.StatusOK,
 			Body: ioutil.NopCloser(bytes.NewBufferString(`
 				{
@@ -148,11 +148,11 @@ func TestCollectorPlexServerGetLibrares(t *testing.T) {
 				}`),
 			),
 		},
-		&http.Response{
+		{
 			StatusCode: http.StatusOK,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 100}}`)),
 		},
-		&http.Response{
+		{
 			StatusCode: http.StatusOK,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"size": 200}}`)),
 		},
