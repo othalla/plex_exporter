@@ -1,4 +1,4 @@
-# pmsx_exporter
+# plex_exporter
 
 ## Description
 
