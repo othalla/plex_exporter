@@ -1,5 +1,7 @@
 # plex_exporter
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/othalla/plex_exporter)](https://goreportcard.com/report/github.com/othalla/plex_exporter)
+
 ## Description
 
 Prometheus exporter for Plex Media Server.
