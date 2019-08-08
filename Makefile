@@ -10,7 +10,7 @@ all: test build
 build: 
 				$(GOBUILD) -o $(BINARY_NAME) -v
 test: 
-				$(GOTEST) -v ./...
+				$(GOTEST) -v ./... --cover
 clean: 
 				$(GOCLEAN)
 				rm -f $(BINARY_NAME)
