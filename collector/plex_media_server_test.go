@@ -154,11 +154,9 @@ func TestCollectorPlexServerGetLibrariesBadJsonResponse(t *testing.T) {
 
 		assert.NotNil(t, err)
 	}
-
 }
 
 func TestCollectorPlexServerGetTranscodeSessions(t *testing.T) {
-
 	responses := []*http.Response{
 		&http.Response{
 			StatusCode: http.StatusOK,
@@ -168,6 +166,20 @@ func TestCollectorPlexServerGetTranscodeSessions(t *testing.T) {
 	client := NewMockHTTPClient(responses, nil)
 
 	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
-	sessionCounter := plexServer.GetTranscodeSessions()
+	sessionCounter, _ := plexServer.GetTranscodeSessions()
 	assert.Equal(t, sessionCounter, 2)
+}
+
+func TestCollectorPlexServerGetTranscodeSessionsBadJsonResponse(t *testing.T) {
+	responses := []*http.Response{
+		&http.Response{
+			StatusCode: http.StatusOK,
+			Body:       ioutil.NopCloser(bytes.NewBufferString(`malformed`)),
+		},
+	}
+	client := NewMockHTTPClient(responses, nil)
+
+	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
+	_, err := plexServer.GetTranscodeSessions()
+	assert.NotNil(t, err)
 }

@@ -103,7 +103,7 @@ func (p *PlexMediaServer) CurrentSessionsCount() (int, error) {
 }
 
 // GetTranscodeSessions returns the number of current transcoding sessions
-func (p *PlexMediaServer) GetTranscodeSessions() int {
+func (p *PlexMediaServer) GetTranscodeSessions() (int, error) {
 	url := fmt.Sprintf(URLSessions, p.Address, p.Port)
 	request, _ := http.NewRequest(http.MethodGet, url, nil)
 	request.Header.Add("X-Plex-Token", p.Token)
@@ -114,9 +114,12 @@ func (p *PlexMediaServer) GetTranscodeSessions() int {
 
 	var transCodeSessionsContainer APITranscodeSessions
 
-	json.Unmarshal([]byte(body), &transCodeSessionsContainer)
+	err := json.Unmarshal([]byte(body), &transCodeSessionsContainer)
+	if err != nil {
+		return 0, err
+	}
 
-	return transCodeSessionsContainer.MediaContainer.Size
+	return transCodeSessionsContainer.MediaContainer.Size, nil
 }
 
 // GetLibraries returns the list of all libraries present on the Plex media object
