@@ -108,14 +108,19 @@ func (p *PlexMediaServer) GetTranscodeSessions() (int, error) {
 	request, _ := http.NewRequest(http.MethodGet, url, nil)
 	request.Header.Add("X-Plex-Token", p.Token)
 	request.Header.Add("Accept", "application/json")
-	response, _ := p.HTTPClient.Do(request)
+	response, err := p.HTTPClient.Do(request)
+	if err != nil {
+		return 0, err
+	}
+	if response.StatusCode != http.StatusOK {
+		return 0, fmt.Errorf("Got bad status code %d from server", response.StatusCode)
+	}
 
 	body, _ := ioutil.ReadAll(response.Body)
 
 	var transCodeSessionsContainer APITranscodeSessions
 
-	err := json.Unmarshal([]byte(body), &transCodeSessionsContainer)
-	if err != nil {
+	if err := json.Unmarshal([]byte(body), &transCodeSessionsContainer); err != nil {
 		return 0, err
 	}
 
