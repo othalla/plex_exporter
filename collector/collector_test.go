@@ -8,12 +8,17 @@ import (
 )
 
 type MockPlexMediaServer struct {
-	Sessions  int
-	Libraries []Library
+	Sessions          int
+	TranscodeSessions int
+	Libraries         []Library
 }
 
 func (mps *MockPlexMediaServer) CurrentSessionsCount() (int, error) {
 	return mps.Sessions, nil
+}
+
+func (mps *MockPlexMediaServer) GetTranscodeSessions() (int, error) {
+	return mps.TranscodeSessions, nil
 }
 
 func (mps *MockPlexMediaServer) GetLibraries() ([]Library, error) {
@@ -29,6 +34,28 @@ func TestPlexMediaServerCollectorMetricsSessions(t *testing.T) {
 # HELP plex_sessions_active_count Number of active Plex sessions
 # TYPE plex_sessions_active_count Gauge
 plex_sessions_active_count 17
+# HELP plex_transcode_sessions_active_count Number of active Plex transcoding sessions
+# TYPE plex_transcode_sessions_active_count Gauge
+plex_transcode_sessions_active_count 0
+	`
+
+	if err := testutil.CollectAndCompare(collector, strings.NewReader(expected)); err != nil {
+		t.Errorf("unexpected collecting result:\n%s", err)
+	}
+}
+
+func TestPlexMediaServerCollectorMetricsTranscodeSessions(t *testing.T) {
+
+	mockServer := &MockPlexMediaServer{Sessions: 10, TranscodeSessions: 8}
+	collector := NewPlexMediaServerCollector(mockServer)
+
+	expected := `
+# HELP plex_sessions_active_count Number of active Plex sessions
+# TYPE plex_sessions_active_count Gauge
+plex_sessions_active_count 10
+# HELP plex_transcode_sessions_active_count Number of active Plex transcoding sessions
+# TYPE plex_transcode_sessions_active_count Gauge
+plex_transcode_sessions_active_count 8
 	`
 
 	if err := testutil.CollectAndCompare(collector, strings.NewReader(expected)); err != nil {
@@ -51,6 +78,9 @@ plex_media_server_library_media_count{name="anotherlib", type="Movie"} 340
 # HELP plex_sessions_active_count Number of active Plex sessions
 # TYPE plex_sessions_active_count Gauge
 plex_sessions_active_count 0
+# HELP plex_transcode_sessions_active_count Number of active Plex transcoding sessions
+# TYPE plex_transcode_sessions_active_count Gauge
+plex_transcode_sessions_active_count 0
 	`
 
 	if err := testutil.CollectAndCompare(collector, strings.NewReader(expected)); err != nil {

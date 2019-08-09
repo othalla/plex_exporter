@@ -8,6 +8,7 @@ import (
 
 type Plex interface {
 	CurrentSessionsCount() (int, error)
+	GetTranscodeSessions() (int, error)
 	GetLibraries() ([]Library, error)
 }
 
@@ -16,6 +17,10 @@ func NewPlexMediaServerCollector(server Plex) *PlexMediaServerCollector {
 		"Number of active Plex sessions",
 		[]string{}, nil,
 	),
+		MetricsTranscodeSessions: prometheus.NewDesc("plex_transcode_sessions_active_count",
+			"Number of active Plex transcoding sessions",
+			[]string{}, nil,
+		),
 		MetricsLibraries: prometheus.NewDesc("plex_media_server_library_media_count",
 			"Number of medias in a plex library",
 			[]string{"name", "type"},
@@ -26,13 +31,15 @@ func NewPlexMediaServerCollector(server Plex) *PlexMediaServerCollector {
 }
 
 type PlexMediaServerCollector struct {
-	MetricsSessions  *prometheus.Desc
-	MetricsLibraries *prometheus.Desc
-	Server           Plex
+	MetricsSessions          *prometheus.Desc
+	MetricsTranscodeSessions *prometheus.Desc
+	MetricsLibraries         *prometheus.Desc
+	Server                   Plex
 }
 
 func (p *PlexMediaServerCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- p.MetricsSessions
+	ch <- p.MetricsTranscodeSessions
 	ch <- p.MetricsLibraries
 }
 
@@ -43,6 +50,13 @@ func (p *PlexMediaServerCollector) Collect(ch chan<- prometheus.Metric) {
 	}
 
 	ch <- prometheus.MustNewConstMetric(p.MetricsSessions, prometheus.GaugeValue, float64(sessions))
+
+	transcodeSessions, err := p.Server.GetTranscodeSessions()
+	if err != nil {
+		log.Print(err)
+	}
+
+	ch <- prometheus.MustNewConstMetric(p.MetricsTranscodeSessions, prometheus.GaugeValue, float64(transcodeSessions))
 
 	libraries, err := p.Server.GetLibraries()
 	if err != nil {
