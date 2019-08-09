@@ -1,6 +1,7 @@
 # plex_exporter
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/othalla/plex_exporter)](https://goreportcard.com/report/github.com/othalla/plex_exporter)
+[![Build Status](https://travis-ci.org/othalla/plex_exporter.svg?branch=master)](https://travis-ci.org/othalla/plex_exporter)
 
 ## Description
 
