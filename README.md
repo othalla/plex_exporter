@@ -11,7 +11,27 @@ This exporter query your Plex Media Server installation directly without passing
 ## Metrics
 
 - Sessions : total active
+- Transcoding Sessions : total active
 - Libraries : number of medias
+
+## Configuration
+
+```json
+{
+  "server": {
+    "address": "plex",
+    "port": 32400,
+    "token": "token"
+  }
+}
+```
+
+## Usage
+
+```console
+# ./plex_exporter --config config.json
+2019/08/09 19:58:34 Starting exporter...
+```
 
 ## TODO
 
