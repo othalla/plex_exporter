@@ -3,7 +3,7 @@ GOCMD=go
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
-BINARY_NAME=pms_exporter
+BINARY_NAME=plex_exporter
 BINARY_UNIX=$(BINARY_NAME)_unix
 
 all: test build
