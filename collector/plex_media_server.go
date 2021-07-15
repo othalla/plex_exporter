@@ -11,7 +11,7 @@ import (
 const URLSessions = "http://%s:%d/status/sessions"
 const URLLibrarySections = "http://%s:%d/library/sections"
 const URLLibrarySectionsIDAll = "http://%s:%d/library/sections/%s/all"
-const URLTranscodeSessions = "https://%s:%d/transcode/seccions"
+const URLTranscodeSessions = "https://%s:%d/transcode/sessions"
 
 type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
