@@ -35,6 +35,9 @@ plex_transcode_sessions_active_count 2
 
 ```json
 {
+ "exporter": {
+    "port": 9594
+  },
   "server": {
     "address": "plex",
     "port": 32400,
@@ -47,7 +50,7 @@ plex_transcode_sessions_active_count 2
 
 ```console
 # ./plex_exporter --config config.json
-2019/08/09 19:58:34 Starting exporter...
+2021/10/22 08:18:11 Starting exporter on port 9594 ...
 ```
 
 ## TODO
