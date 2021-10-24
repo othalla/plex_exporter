@@ -9,7 +9,12 @@ import (
 
 // Config struct with plex server info
 type Config struct {
+	Exporter exporter `json:"exporter"`
 	Server server `json:"server"`
+}
+
+type exporter struct {
+	Port    int    `json:"port"`
 }
 
 type server struct {

@@ -14,13 +14,14 @@ func TestLoadConfig(t *testing.T) {
 	tempFile, _ := ioutil.TempFile(os.TempDir(), "test-")
 	defer os.RemoveAll(tempFile.Name())
 
-	JSONConfig := []byte(`{"server": {"address": "127.0.0.1", "port": 32400, "token": "webtoken"}}`)
+	JSONConfig := []byte(`{"exporter": {"port": 9594}, "server": {"address": "127.0.0.1", "port": 32400, "token": "webtoken"}}`)
 
 	tempFile.Write(JSONConfig)
 
 	config, err := Load(tempFile.Name())
 
 	assert.Nil(t, err)
+	assert.Equal(t, config.Exporter.Port, "9594")
 	assert.Equal(t, config.Server.Address, "127.0.0.1")
 	assert.Equal(t, config.Server.Port, 32400)
 	assert.Equal(t, config.Server.Token, "webtoken")

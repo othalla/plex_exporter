@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"fmt"
 
 	"github.com/othalla/plex_exporter/collector"
 	"github.com/othalla/plex_exporter/config"
@@ -49,9 +50,9 @@ func runExporter(c *cli.Context) error {
 
 	prometheus.MustRegister(collector)
 
-	log.Print("Starting exporter...")
 	http.Handle("/metrics", promhttp.Handler())
-	http.ListenAndServe(":9090", nil)
+	log.Printf("Starting exporter on port %d ...", config.Exporter.Port)
+	http.ListenAndServe(fmt.Sprintf(":%d", config.Exporter.Port), nil)
 
 	return nil
 }
