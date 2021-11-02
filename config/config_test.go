@@ -21,7 +21,7 @@ func TestLoadConfig(t *testing.T) {
 	config, err := Load(tempFile.Name())
 
 	assert.Nil(t, err)
-	assert.Equal(t, config.Exporter.Port, "9594")
+	assert.Equal(t, config.Exporter.Port, 9594)
 	assert.Equal(t, config.Server.Address, "127.0.0.1")
 	assert.Equal(t, config.Server.Port, 32400)
 	assert.Equal(t, config.Server.Token, "webtoken")
