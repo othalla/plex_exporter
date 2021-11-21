@@ -11,7 +11,7 @@ import (
 const URLSessions = "http://%s:%d/status/sessions"
 const URLLibrarySections = "http://%s:%d/library/sections"
 const URLLibrarySectionsIDAll = "http://%s:%d/library/sections/%s/all"
-const URLTranscodeSessions = "https://%s:%d/transcode/sessions"
+const URLTranscodeSessions = "http://%s:%d/transcode/sessions"
 
 type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
@@ -104,7 +104,7 @@ func (p *PlexMediaServer) CurrentSessionsCount() (int, error) {
 
 // GetTranscodeSessions returns the number of current transcoding sessions
 func (p *PlexMediaServer) GetTranscodeSessions() (int, error) {
-	url := fmt.Sprintf(URLSessions, p.Address, p.Port)
+	url := fmt.Sprintf(URLTranscodeSessions, p.Address, p.Port)
 	request, _ := http.NewRequest(http.MethodGet, url, nil)
 	request.Header.Add("X-Plex-Token", p.Token)
 	request.Header.Add("Accept", "application/json")
