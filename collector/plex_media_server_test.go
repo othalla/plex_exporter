@@ -94,7 +94,8 @@ func TestCollectorPlexServerCurrentSessionsCount(t *testing.T) {
 	client := NewMockHTTPClient(responses, nil)
 
 	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
-	sessionCounter, _ := plexServer.CurrentSessionsCount()
+	sessionCounter, err := plexServer.CurrentSessionsCount()
+	assert.NoError(t, err)
 	assert.Equal(t, sessionCounter, 3)
 }
 
@@ -123,7 +124,7 @@ func TestCollectorPlexServerCurrentSessionsCountBadStatusCode(t *testing.T) {
 	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
 	_, err := plexServer.CurrentSessionsCount()
 	assert.NotNil(t, err)
-	assert.Equal(t, err, fmt.Errorf("Got bad status code 500 from server"))
+	assert.Equal(t, err, fmt.Errorf("got bad status code 500 from server"))
 }
 
 func TestCollectorPlexServerCurrentSessionsCountHTTPRequestError(t *testing.T) {
@@ -144,7 +145,8 @@ func TestCollectorPlexServerGetTranscodeSessions(t *testing.T) {
 	client := NewMockHTTPClient(responses, nil)
 
 	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
-	sessionCounter, _ := plexServer.GetTranscodeSessions()
+	sessionCounter, err := plexServer.GetTranscodeSessions()
+	assert.NoError(t, err)
 	assert.Equal(t, sessionCounter, 2)
 }
 
@@ -181,7 +183,7 @@ func TestCollectorPlexServerGetTranscodeSessionsCountBadStatusCode(t *testing.T)
 	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
 	_, err := plexServer.GetTranscodeSessions()
 	assert.NotNil(t, err)
-	assert.Equal(t, err, fmt.Errorf("Got bad status code 500 from server"))
+	assert.Equal(t, err, fmt.Errorf("got bad status code 500 from server"))
 }
 
 func TestCollectorPlexServerGetLibrares(t *testing.T) {
@@ -211,7 +213,8 @@ func TestCollectorPlexServerGetLibrares(t *testing.T) {
 	client := NewMockHTTPClient(responses, nil)
 
 	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
-	libraries, _ := plexServer.GetLibraries()
+	libraries, err := plexServer.GetLibraries()
+	assert.NoError(t, err)
 
 	assert.Equal(t, libraries[0].Name, "First")
 	assert.Equal(t, libraries[0].Type, "show")

@@ -123,7 +123,7 @@ func (p *PlexMediaServer) CurrentSessionsCount() (int, error) {
 		return 0, err
 	}
 	if response.StatusCode != http.StatusOK {
-		return 0, fmt.Errorf("Got bad status code %d from server", response.StatusCode)
+		return 0, fmt.Errorf("got bad status code %d from server", response.StatusCode)
 	}
 
 	body, err := ioutil.ReadAll(response.Body)
@@ -150,7 +150,7 @@ func (p *PlexMediaServer) GetTranscodeSessions() (int, error) {
 		return 0, err
 	}
 	if response.StatusCode != http.StatusOK {
-		return 0, fmt.Errorf("Got bad status code %d from server", response.StatusCode)
+		return 0, fmt.Errorf("got bad status code %d from server", response.StatusCode)
 	}
 
 	body, _ := ioutil.ReadAll(response.Body)
