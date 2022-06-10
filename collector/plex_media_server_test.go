@@ -32,6 +32,57 @@ func (c *MockHTTPClient) Do(req *http.Request) (*http.Response, error) {
 	return response, nil
 }
 
+func TestCollectorPlexServerGetVersion(t *testing.T) {
+	responses := []*http.Response{
+		{
+			StatusCode: http.StatusOK,
+			Body:       ioutil.NopCloser(bytes.NewBufferString(`{"MediaContainer": {"version": "1.25.1"}}`)),
+		},
+	}
+	client := NewMockHTTPClient(responses, nil)
+
+	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
+	version, err := plexServer.GetVersion()
+	assert.NoError(t, err)
+	assert.Equal(t, version, "1.25.1")
+}
+
+func TestPCollectorlexServerGetVersionBadJsonResponse(t *testing.T) {
+	responses := []*http.Response{
+		{
+			StatusCode: http.StatusOK,
+			Body:       ioutil.NopCloser(bytes.NewBufferString(`malformed`)),
+		},
+	}
+	client := NewMockHTTPClient(responses, nil)
+
+	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
+	_, err := plexServer.GetVersion()
+	assert.NotNil(t, err)
+}
+
+func TestCollectorPlexServerGetVersionBadStatusCode(t *testing.T) {
+	responses := []*http.Response{
+		{
+			StatusCode: 500,
+		},
+	}
+	client := NewMockHTTPClient(responses, nil)
+
+	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
+	_, err := plexServer.GetVersion()
+	assert.NotNil(t, err)
+	assert.Equal(t, err, fmt.Errorf("got bad status code 500 from server"))
+}
+
+func TestCollectorPlexServerGetVersionHTTPRequestError(t *testing.T) {
+	client := NewMockHTTPClient(nil, errors.New("http error"))
+
+	plexServer := PlexMediaServer{Address: "127.0.0.1", Port: 32400, Token: "auth-token", HTTPClient: client}
+	_, err := plexServer.GetVersion()
+	assert.NotNil(t, err)
+}
+
 func TestCollectorPlexServerCurrentSessionsCount(t *testing.T) {
 
 	responses := []*http.Response{

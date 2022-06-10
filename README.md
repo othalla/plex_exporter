@@ -10,13 +10,17 @@ This exporter query your Plex Media Server installation directly without passing
 
 ## Metrics
 
-- Sessions : total active
-- Transcoding Sessions : total active
-- Libraries : number of medias
+- Plex Media Server information: version
+- Sessions: total active
+- Transcoding Sessions: total active
+- Libraries: number of medias
 
 output
 
 ```
+# HELP plex_info Plex media server information
+# TYPE plex_info Gauge
+plex_info{version="1.26.2.5797-5bd057d2b"} 1
 # HELP plex_media_server_library_media_count Number of medias in a plex library
 # TYPE plex_media_server_library_media_count gauge
 plex_media_server_library_media_count{name="Animes",type="show"} 33

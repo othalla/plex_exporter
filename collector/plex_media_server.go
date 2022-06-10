@@ -8,6 +8,7 @@ import (
 )
 
 // TODO CHANGE INSECURE - do we have to query server directly? query it through plex.tv?
+const URLServerCapabilities = "http://%s:%d/"
 const URLSessions = "http://%s:%d/status/sessions"
 const URLLibrarySections = "http://%s:%d/library/sections"
 const URLLibrarySectionsIDAll = "http://%s:%d/library/sections/%s/all"
@@ -15,6 +16,15 @@ const URLTranscodeSessions = "http://%s:%d/transcode/sessions"
 
 type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
+}
+
+// API Response for / which returns server capabilities
+type APIServerCapabilities struct {
+	MediaContainer APIServerCapabilitiesMediaContainer `json:"MediaContainer"`
+}
+
+type APIServerCapabilitiesMediaContainer struct {
+	Version string `json:"version"`
 }
 
 // API Response for /status/sections which give the number of current active sessions
@@ -73,6 +83,33 @@ type PlexMediaServer struct {
 	Port       int
 	Token      string
 	HTTPClient HTTPClient
+}
+
+func (p *PlexMediaServer) GetVersion() (string, error) {
+	url := fmt.Sprintf(URLServerCapabilities, p.Address, p.Port)
+
+	request, _ := http.NewRequest(http.MethodGet, url, nil)
+	request.Header.Add("X-Plex-Token", p.Token)
+	request.Header.Add("Accept", "application/json")
+	response, err := p.HTTPClient.Do(request)
+	if err != nil {
+		return "", err
+	}
+	if response.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("got bad status code %d from server", response.StatusCode)
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return "", err
+	}
+	var serverCapatilities APIServerCapabilities
+
+	if err := json.Unmarshal([]byte(body), &serverCapatilities); err != nil {
+		return "", err
+	}
+
+	return serverCapatilities.MediaContainer.Version, nil
 }
 
 func (p *PlexMediaServer) CurrentSessionsCount() (int, error) {
